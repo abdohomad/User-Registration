@@ -3,13 +3,13 @@ const express = require('express');
 const router = express.Router();
 // const db_connection = require('../config/db_operations');
 const db_connection = require('../config/db_connection');
-const { request } = require('express');
+// const { request } = require('express');
 
 const newUser = async (Users) => {
     try {
         let pool = await sql.connect(db_connection);
         let result = await pool.request()
-            .input("PersonID", sql.Int(), Users.PersonID)
+            .input("PersonID", sql.Int, Users.PersonID).toS
             .input("FirstName", sql.VarChar(255), Users.FirstName)
             .input("LastName", sql.VarChar(255), Users.LastName)
             .input("Email", sql.VarChar(255), Users.Email)
@@ -21,12 +21,13 @@ const newUser = async (Users) => {
         console.log(err);
     }
 }
-router.post("/api/v1/Registration", async (req, res) => {
+router.post('/api/v1/Registration', async (req, res) => {
 
-    let order = { ...request.body }
+    // newUser();
+    let Users = { ...req.body }
 
-    newUser(order).then(result => {
-        res.status(201).json(result);
+    newUser(Users).then(result => {
+        res.status(201).json(Users);
     })
 
 });
