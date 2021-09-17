@@ -16,16 +16,54 @@ const port = process.env.PORT || 8080;
 app.use(bodyParser.json());
 app.use(cors());
 
-// app.use(function (req, res, next) {
-//     res.header("Access-Control-Allow-Origin", "*");
-//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//     res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
-//     next();
-// });
+var mysql = require('mysql');
 
-app.use(register_router, (send, res) => {
+const db = mysql.createConnection({
+    host: '192.168.0.102',
+    user: 'naksh',
+    password: 'SUDANsat56#',
+    database: 'customers',
 
 });
+db.connect((err) => {
+    if (err) throw err
+    console.log("db is connected successfully:", db.threadId);
+});
+
+
+
+app.post('/reqister', (req, res) => {
+
+    var sql = `INSERT INTO users(name, gender) VALUES (?)`;
+    var values = [
+        ['abdalrahman bashir', 'male'],
+        ['khalid hassen', 'male'],
+        ['noram ali', 'femal']
+    ];
+
+    db.query(sql, [values], function (err, data, fields) {
+        if (err) throw err;
+        console.log(data);
+    })
+
+});
+
+app.get('/users', (req, res) => {
+    db.query(`select * from users`, (err, result, fields) => {
+        if (err) {
+            return console.log(err);
+        }
+
+        res.json({
+            result
+        }
+
+        );
+    });
+})
+
+
+
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
